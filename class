@@ -1,0 +1,122 @@
+import java.util.*;
+
+/**
+ * @author Riebeta Bokoko
+ * Substitution Cipher (Caesar)
+ * The program at the time being does NOT make distinction between Upper and Lower case, The user input is expected to be all lower case for the program to encode and decode effectively
+ */
+public class substitutionCypher 
+{
+	public static void main(String[] args) 
+	{
+		Scanner in = new Scanner(System.in);
+		ArrayList<String> alphabet = new ArrayList<String>(Arrays.asList("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+		"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"));
+		
+		ArrayList<String> skipped = new ArrayList<String>(Arrays.asList(" ", ",", "'", ".", ";", "?", "!"));
+		
+		System.out.println("Enter the message you wish to encrypt: ");
+		String message = in.nextLine();
+		System.out.println("Enter the key you wish to encode your message with ");
+		int key = in.nextInt();
+		while (key > 25) // Restricts they key to be no higher than 25 as that is the number of letters in the alphabet
+		{
+			System.out.println("Your key cannot exceed the number of letters in the Alphabet... ");
+			System.out.println("Enter the key you wish to encode your message with ");
+			key = in.nextInt();
+		}
+		System.out.println();
+		
+		String encrypted = encode(alphabet,skipped,message,key);
+		System.out.println(encrypted);
+		
+		System.out.println();
+		
+		String decrypted = decode(alphabet,skipped,encrypted,key);
+		System.out.println(decrypted);
+		
+		in.close();
+		
+	}
+	
+	/**
+	 * @param alphabet
+	 * @param message
+	 * @param key
+	 * @return
+	 * Encodes the message that the user enters 
+	 */
+	public static String encode(ArrayList<String> alphabet, ArrayList<String> skipped, String message, int key)
+	{
+		int mLong = message.length();
+		char letter;
+		boolean jump = false;
+		String letterAsStr;
+		String encoded = "";
+		for (int i = 0; i < mLong; i++)
+		{
+			jump = false;
+			letter = message.charAt(i);
+			letterAsStr = String.valueOf(letter);
+			for (int z = 0; z < skipped.size(); z++)
+			{
+				if (letterAsStr.equals(skipped.get(z))){jump = true;}
+			}
+			if (jump == true){encoded += letterAsStr; continue;}
+			else
+			{
+				for (int j = 0; j < alphabet.size(); j++)
+				{
+					if (letterAsStr.equals(alphabet.get(j)))
+					{
+						letterAsStr = alphabet.get(j+key);
+						break;
+					}
+				}
+			}
+			encoded += letterAsStr;
+		}
+		return encoded;
+	}
+	/**
+	 * @param alphabet
+	 * @param message
+	 * @param key
+	 * @return
+	 * Decodes the message that the user has entered 
+	 */
+	public static String decode(ArrayList<String> alphabet, ArrayList<String> skipped, String encoded, int key)
+	{
+		int mLong = encoded.length();
+		char letter;
+		boolean jump = false;
+		String letterAsStr;
+		String decoded = "";
+		for (int i = 0; i < mLong; i++)
+		{
+			jump = false;
+			letter = encoded.charAt(i);
+			letterAsStr = String.valueOf(letter);
+			for (int z = 0; z < skipped.size(); z++)
+			{
+				if (letterAsStr.equals(skipped.get(z))){jump = true;}
+			}
+			if (jump == true){decoded += letterAsStr; continue;}
+			else
+			{
+				for (int j = 0; j < alphabet.size(); j++)
+				{
+					if (j - key < 0){j =+ 25;} // if the operation on the if statement is less than 0 then we sum up 25 to the actual value of j
+					if (letterAsStr.equals(alphabet.get(j)))
+					{
+						letterAsStr = alphabet.get(j-key);
+						break;
+					}
+				}
+			}
+			decoded += letterAsStr;
+		}
+		return decoded;
+	}
+
+}
