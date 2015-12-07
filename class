@@ -3,7 +3,7 @@ import java.util.*;
 /**
  * @author Riebeta Bokoko
  * Substitution Cipher (Caesar)
- * The program at the time being does NOT make distinction between Upper and Lower case, The user input is expected to be all lower case for the program to encode and decode effectively
+ * Version 2.0 now distinguish between Lower and Upper case
  */
 public class substitutionCypher 
 {
