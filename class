@@ -10,10 +10,15 @@ public class substitutionCypher
 	public static void main(String[] args) 
 	{
 		Scanner in = new Scanner(System.in);
-		ArrayList<String> alphabet = new ArrayList<String>(Arrays.asList("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+		ArrayList<String> lowerCase = new ArrayList<String>(Arrays.asList("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
 		"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"));
 		
+		ArrayList<String> upperCase = new ArrayList<String>();
+		for(int i = 0; i < lowerCase.size(); i++){upperCase.add(lowerCase.get(i).toUpperCase());}
+		
 		ArrayList<String> skipped = new ArrayList<String>(Arrays.asList(" ", ",", "'", ".", ";", "?", "!"));
+		
+		
 		
 		System.out.println("Enter the message you wish to encrypt: ");
 		String message = in.nextLine();
@@ -27,12 +32,12 @@ public class substitutionCypher
 		}
 		System.out.println();
 		
-		String encrypted = encode(alphabet,skipped,message,key);
+		String encrypted = encode(lowerCase,upperCase,skipped,message,key);
 		System.out.println(encrypted);
 		
 		System.out.println();
 		
-		String decrypted = decode(alphabet,skipped,encrypted,key);
+		String decrypted = decode(lowerCase,upperCase,skipped,encrypted,key);
 		System.out.println(decrypted);
 		
 		in.close();
@@ -46,7 +51,7 @@ public class substitutionCypher
 	 * @return
 	 * Encodes the message that the user enters 
 	 */
-	public static String encode(ArrayList<String> alphabet, ArrayList<String> skipped, String message, int key)
+	public static String encode(ArrayList<String> lc, ArrayList<String> uc, ArrayList<String> skipped, String message, int key)
 	{
 		int mLong = message.length();
 		char letter;
@@ -57,24 +62,48 @@ public class substitutionCypher
 		{
 			jump = false;
 			letter = message.charAt(i);
-			letterAsStr = String.valueOf(letter);
-			for (int z = 0; z < skipped.size(); z++)
+			if(Character.isUpperCase(letter))
 			{
-				if (letterAsStr.equals(skipped.get(z))){jump = true;}
-			}
-			if (jump == true){encoded += letterAsStr; continue;}
-			else
-			{
-				for (int j = 0; j < alphabet.size(); j++)
+				letterAsStr = String.valueOf(letter);
+				for (int z = 0; z < skipped.size(); z++)
 				{
-					if (letterAsStr.equals(alphabet.get(j)))
+					if (letterAsStr.equals(skipped.get(z))){jump = true;}
+				}
+				if (jump == true){encoded += letterAsStr; continue;}
+				else
+				{
+					for (int j = 0; j < uc.size(); j++)
 					{
-						letterAsStr = alphabet.get(j+key);
-						break;
+						if (letterAsStr.equals(uc.get(j)))
+						{
+							letterAsStr = uc.get(j+key);
+							break;
+						}
 					}
 				}
+				encoded += letterAsStr;
 			}
-			encoded += letterAsStr;
+			else
+			{
+				letterAsStr = String.valueOf(letter);
+				for (int z = 0; z < skipped.size(); z++)
+				{
+					if (letterAsStr.equals(skipped.get(z))){jump = true;}
+				}
+				if (jump == true){encoded += letterAsStr; continue;}
+				else
+				{
+					for (int j = 0; j < lc.size(); j++)
+					{
+						if (letterAsStr.equals(lc.get(j)))
+						{
+							letterAsStr = lc.get(j+key);
+							break;
+						}
+					}
+				}
+				encoded += letterAsStr;
+			}
 		}
 		return encoded;
 	}
@@ -85,7 +114,7 @@ public class substitutionCypher
 	 * @return
 	 * Decodes the message that the user has entered 
 	 */
-	public static String decode(ArrayList<String> alphabet, ArrayList<String> skipped, String encoded, int key)
+	public static String decode(ArrayList<String> lc, ArrayList<String> uc, ArrayList<String> skipped, String encoded, int key)
 	{
 		int mLong = encoded.length();
 		char letter;
@@ -96,25 +125,50 @@ public class substitutionCypher
 		{
 			jump = false;
 			letter = encoded.charAt(i);
-			letterAsStr = String.valueOf(letter);
-			for (int z = 0; z < skipped.size(); z++)
+			if(Character.isUpperCase(letter))
 			{
-				if (letterAsStr.equals(skipped.get(z))){jump = true;}
-			}
-			if (jump == true){decoded += letterAsStr; continue;}
-			else
-			{
-				for (int j = 0; j < alphabet.size(); j++)
+				letterAsStr = String.valueOf(letter);
+				for (int z = 0; z < skipped.size(); z++)
 				{
-					if (j - key < 0){j =+ 25;} // if the operation on the if statement is less than 0 then we sum up 25 to the actual value of j
-					if (letterAsStr.equals(alphabet.get(j)))
+					if (letterAsStr.equals(skipped.get(z))){jump = true;}
+				}
+				if (jump == true){decoded += letterAsStr; continue;}
+				else
+				{
+					for (int j = 0; j < uc.size(); j++)
 					{
-						letterAsStr = alphabet.get(j-key);
-						break;
+						if (j - key < 0){j =+ 25;} // if the operation on the if statement is less than 0 then we sum up 25 to the actual value of j
+						if (letterAsStr.equals(uc.get(j)))
+						{
+							letterAsStr = uc.get(j-key);
+							break;
+						}
 					}
 				}
+				decoded += letterAsStr;
 			}
-			decoded += letterAsStr;
+			else
+			{
+				letterAsStr = String.valueOf(letter);
+				for (int z = 0; z < skipped.size(); z++)
+				{
+					if (letterAsStr.equals(skipped.get(z))){jump = true;}
+				}
+				if (jump == true){decoded += letterAsStr; continue;}
+				else
+				{
+					for (int j = 0; j < lc.size(); j++)
+					{
+						if (j - key < 0){j =+ 25;} // if the operation on the if statement is less than 0 then we sum up 25 to the actual value of j
+						if (letterAsStr.equals(lc.get(j)))
+						{
+							letterAsStr = lc.get(j-key);
+							break;
+						}
+					}
+				}
+				decoded += letterAsStr;
+			}
 		}
 		return decoded;
 	}
